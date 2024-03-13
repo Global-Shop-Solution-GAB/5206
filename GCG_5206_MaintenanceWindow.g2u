@@ -1,0 +1,232 @@
+Program.Sub.ScreenSU.Start
+Gui.FormStatusMaintenance..Create
+Gui.FormStatusMaintenance..Caption("Status Maintenance")
+Gui.FormStatusMaintenance..Size(9720,6765)
+Gui.FormStatusMaintenance..MinX(0)
+Gui.FormStatusMaintenance..MinY(0)
+Gui.FormStatusMaintenance..Position(0,0)
+Gui.FormStatusMaintenance..BackColor(-2147483633)
+Gui.FormStatusMaintenance..MousePointer(0)
+Gui.FormStatusMaintenance..Event(UnLoad,FormStatusMaintenance_UnLoad)
+Gui.FormStatusMaintenance.gsgcStatus.Create(GsGridControl)
+Gui.FormStatusMaintenance.gsgcStatus.Size(9720,5535)
+Gui.FormStatusMaintenance.gsgcStatus.Position(0,525)
+Gui.FormStatusMaintenance.gsgcStatus.Event(RowCellClick,gsgcStatus_RowCellClick)
+Gui.FormStatusMaintenance.textStatus.Create(TextBox,"",True,7665,300,0,795,180,True,0,"Arial",8,-2147483643,1)
+Gui.FormStatusMaintenance.textStatus.MaxLength(100)
+Gui.FormStatusMaintenance.labelStatus.Create(Label,"Status:",True,630,255,0,90,270,True,0,"Arial",8,-2147483633,0)
+Gui.FormStatusMaintenance.buttonAdd.Create(Button)
+Gui.FormStatusMaintenance.buttonAdd.Size(855,375)
+Gui.FormStatusMaintenance.buttonAdd.Position(8550,135)
+Gui.FormStatusMaintenance.buttonAdd.Caption("Add")
+Gui.FormStatusMaintenance.buttonAdd.Event(Click,buttonAdd_Click)
+Gui.FormStatusMaintenance.buttonSave.Create(Button)
+Gui.FormStatusMaintenance.buttonSave.Size(990,375)
+Gui.FormStatusMaintenance.buttonSave.Position(8565,6075)
+Gui.FormStatusMaintenance.buttonSave.Caption("Save")
+Gui.FormStatusMaintenance.buttonSave.Event(Click,buttonSave_Click)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'GCG_5206_MaintenanceWindow.g2u
+'Trey Seddon
+'9/4/2018
+'A window to add statuses usable in GCG_5206_OpenJobReviewWithStatus.g2u
+'For US Bolt Manufacturing
+V.Local.sError.Declare(String)
+F.Intrinsic.Control.Try
+
+'Set Icon
+V.Local.sIcon.Declare(String)
+F.Intrinsic.String.Build("{0}\GAB\GAS\gss2.ico",V.Caller.PluginsDir,v.Local.sIcon)
+GUI.FormStatusMaintenance..Icon(V.Local.sIcon)
+
+F.ODBC.Connection!Conn.OpenCompanyConnection
+F.Intrinsic.Control.CallSub(LoadStatus)
+F.Intrinsic.Control.CallSub(GridSetUp)
+GUI.FormStatusMaintenance..Show
+
+F.Intrinsic.Control.Catch
+    F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+    F.Intrinsic.UI.Msgbox(V.Local.sError)
+    F.Intrinsic.Control.End
+F.Intrinsic.Control.EndTry
+Program.Sub.Main.End
+
+Program.Sub.LoadStatus.Start
+V.Local.sError.Declare(String)
+F.Intrinsic.Control.Try
+
+'Load the data and set up the grid
+F.Data.DataTable.CreateFromSQL("dtStatus", "Conn", "select RTRIM(STATUS) as STATUS, RTRIM(STATUS) as ORIGINAL from GCG_5206_SET_STATUS", True)
+F.Data.DataTable.AddColumn("dtStatus", "Delete", "String", "Delete")
+
+F.Intrinsic.Control.Catch
+    F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+    F.Intrinsic.UI.Msgbox(V.Local.sError)
+    F.Intrinsic.Control.End
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadStatus.End
+
+Program.Sub.GridSetUp.Start
+V.Local.sError.Declare(String)
+F.Intrinsic.Control.Try
+
+gui.FormStatusMaintenance.gsgcStatus.AddGridviewFromDataTable("gridStatus", "dtStatus")
+
+GUI.FormStatusMaintenance.gsgcStatus.SetColumnProperty("gridStatus", "Status", "Caption", "Status")
+GUI.FormStatusMaintenance.gsgcStatus.SetColumnProperty("gridStatus", "Status", "HeaderFontBold", True)
+GUI.FormStatusMaintenance.gsgcStatus.SetColumnProperty("gridStatus", "Status", "MinWidth", 560)
+GUI.FormStatusMaintenance.gsgcStatus.SetColumnProperty("gridStatus", "Status", "AllowEdit", True)
+GUI.FormStatusMaintenance.gsgcStatus.SetColumnProperty("gridStatus", "Status", "ReadOnly", False)
+GUI.FormStatusMaintenance.gsgcStatus.SetColumnProperty("gridStatus", "Status", "MaxLength", 100)
+
+GUI.FormStatusMaintenance.gsgcStatus.SetColumnProperty("gridStatus", "Delete", "ShowCaption", False)
+GUI.FormStatusMaintenance.gsgcStatus.SetColumnProperty("gridStatus", "Delete", "CellHAlignment", "Center")
+GUI.FormStatusMaintenance.gsgcStatus.SetColumnProperty("gridStatus", "Delete", "AllowEdit", False)
+GUI.FormStatusMaintenance.gsgcStatus.SetColumnProperty("gridStatus", "Delete", "ReadOnly", True)
+GUI.FormStatusMaintenance.gsgcStatus.SetColumnProperty("gridStatus", "Delete", "CellBackColor", "Gray")
+GUI.FormStatusMaintenance.gsgcStatus.SetColumnProperty("gridStatus", "Delete", "CellForeColor", "White")
+
+GUI.FormStatusMaintenance.gsgcStatus.SetColumnProperty("gridStatus", "Original", "Visible", False)
+
+gui.FormStatusMaintenance.gsgcStatus.MainView("gridStatus")
+
+F.Intrinsic.Control.Catch
+    F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+    F.Intrinsic.UI.Msgbox(V.Local.sError)
+    F.Intrinsic.Control.End
+F.Intrinsic.Control.EndTry
+Program.Sub.GridSetUp.End
+
+Program.Sub.FormStatusMaintenance_UnLoad.Start
+V.Local.sError.Declare(String)
+F.Intrinsic.Control.Try
+
+F.Data.DataTable.Close("dtStatus")
+F.ODBC.Connection!Conn.Close
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.Catch
+    F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+    F.Intrinsic.UI.Msgbox(V.Local.sError)
+    F.Intrinsic.Control.End
+F.Intrinsic.Control.EndTry
+Program.Sub.FormStatusMaintenance_UnLoad.End
+
+Program.Sub.buttonAdd_Click.Start
+V.Local.sError.Declare(String)
+F.Intrinsic.Control.Try
+
+'Add the status entry from the text box to the database and grid
+V.Local.sValue.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.sRet.Declare(String)
+V.Local.sValuePSQL.Declare(String)
+V.Local.sValue.Set(V.Screen.FormStatusMaintenance!textStatus.Text.Trim)
+V.Local.sValuePSQL.Set(V.Local.sValue.PSQLFriendly)
+
+'Check if it's already in the database, and it isn't null, if not, insert it
+F.Intrinsic.String.Build("select STATUS from GCG_5206_SET_STATUS where upper(STATUS) = '{0}'", V.Local.sValuePSQL.UCase, V.Local.sSQL)
+F.ODBC.Connection!Conn.ExecuteAndReturn(V.Local.sSQL, V.Local.sRet)
+F.Intrinsic.Control.If(V.Local.sValue, !=, "", "and", V.Ambient.ExecuteAndReturnEOF, =, True)
+	F.Intrinsic.String.Build("insert into GCG_5206_SET_STATUS (STATUS) values ('{0}')", V.Local.sValuePSQL, V.Local.sSQL)
+	F.ODBC.Connection!Conn.Execute(V.Local.sSQL)
+	F.Data.DataTable.AddRow("dtStatus", "Status", V.Local.sValue, "Original", V.Local.sValue)
+F.Intrinsic.Control.EndIf
+
+GUI.FormStatusMaintenance.textStatus.Text("")
+
+F.Intrinsic.Control.Catch
+    F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+    F.Intrinsic.UI.Msgbox(V.Local.sError)
+    F.Intrinsic.Control.End
+F.Intrinsic.Control.EndTry
+Program.Sub.buttonAdd_Click.End
+
+Program.Sub.buttonSave_Click.Start
+V.Local.sError.Declare(String)
+F.Intrinsic.Control.Try
+
+'Update modified records in the DB
+F.Data.DataView.Create("dtStatus", "dvStatus", 22, "Status <> Original", "")
+F.Intrinsic.Control.If(V.DataView.dtStatus!dvStatus.RowCount, !=, 0)
+
+	V.Local.sSQL.Declare(String)
+	V.Local.iCount.Declare(Long)
+	V.Local.sNew.Declare(String)
+	V.Local.sOld.Declare(String)
+	V.Local.sRet.Declare(String)
+	
+	F.Intrinsic.Control.For(V.Local.iCount, V.DataView.dtStatus!dvStatus.RowCount--, 0, -1)
+		V.Local.sOld.Set(V.DataView.dtStatus!dvStatus(V.Local.iCount).Original!FieldValTrim)
+		V.Local.sNew.Set(V.DataView.dtStatus!dvStatus(V.Local.iCount).Status!FieldValTrim)
+		
+		'check if this status already exists
+		F.Intrinsic.String.Build("select STATUS from GCG_5206_SET_STATUS where upper(STATUS) = '{0}'", V.Local.sNew, V.Local.sSQL)
+		F.ODBC.Connection!Conn.ExecuteAndReturn(V.Local.sSQL, V.Local.sRet)
+		
+		F.Intrinsic.Control.If(V.Ambient.ExecuteAndReturnEOF, =, False)
+			F.Intrinsic.String.Build("Error: Status '{0}' already exists. Skipping...", V.Local.sNew, V.Local.sError)
+			F.Intrinsic.UI.Msgbox(V.Local.sError)
+			F.Data.DataView.SetValue("dtStatus", "dvStatus", V.Local.iCount, "Status", V.Local.sOld)
+		F.Intrinsic.Control.Else
+	
+			F.Intrinsic.String.Build("update GCG_5206_SET_STATUS set STATUS = '{0}' where STATUS = '{1}'", V.Local.sNew, V.Local.sOld, V.Local.sSQL)
+			F.ODBC.Connection!Conn.Execute(V.Local.sSQL)
+			
+			'update original column
+			F.Data.DataView.SetValue("dtStatus", "dvStatus", V.Local.iCount, "Original", V.Local.sNew)
+			
+			'update WO statuses
+			F.Intrinsic.String.Build("update GCG_5206_STATUS set STATUS = '{0}' where STATUS = '{1}'", V.Local.sNew, V.Local.sOld, V.Local.sSQL)
+			F.ODBC.Connection!Conn.Execute(V.Local.sSQL)
+		F.Intrinsic.Control.Next(V.Local.iCount)
+		F.Intrinsic.UI.Msgbox("Changes saved successfully")
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+F.Data.DataView.Close("dtStatus", "dvStatus")
+
+F.Intrinsic.Control.Catch
+    F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+    F.Intrinsic.UI.Msgbox(V.Local.sError)
+    F.Intrinsic.Control.End
+F.Intrinsic.Control.EndTry
+Program.Sub.buttonSave_Click.End
+
+Program.Sub.gsgcStatus_RowCellClick.Start
+V.Local.sError.Declare(String)
+F.Intrinsic.Control.Try
+
+'Delete the row if the delete "button" is clicked
+F.Intrinsic.Control.If(V.Args.Column, =, "Delete")
+	V.Local.sSQL.Declare(String)
+	V.Local.sValue.Declare(String)
+	V.Local.sMsg.Declare(String)
+	V.Local.iRet.Declare(Long)
+	GUI.FormStatusMaintenance.gsgcStatus.GetCellValueByColumnName("gridStatus", "Status", V.Args.RowIndex, V.Local.sValue)
+	V.Local.sValue.Set(V.Local.sValue.Trim)
+	F.Intrinsic.String.Build("Are you sure you want to delete the status '{0}'? This will clear this status from all work orders.", V.Local.sValue, V.Local.sMsg)
+	F.Intrinsic.UI.Msgbox(V.Local.sMsg, "Delete", 4, V.Local.iRet)
+	
+	F.Intrinsic.Control.If(V.Local.iRet, =, 6)
+		F.Intrinsic.String.Build("delete from GCG_5206_SET_STATUS where STATUS = '{0}'", V.Local.sValue.PSQLFriendly, V.Local.sSQL)
+		F.ODBC.Connection!Conn.Execute(V.Local.sSQL)
+		GUI.FormStatusMaintenance.gsgcStatus.HideRow("gridStatus", V.Args.RowIndex, True)
+		
+		F.Intrinsic.String.Build("delete from GCG_5206_STATUS where STATUS = '{0}'", V.Local.sValue.PSQLFriendly, V.Local.sSQL)
+		F.ODBC.Connection!Conn.Execute(V.Local.sSQL)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+    F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+    F.Intrinsic.UI.Msgbox(V.Local.sError)
+    F.Intrinsic.Control.End
+F.Intrinsic.Control.EndTry
+Program.Sub.gsgcStatus_RowCellClick.End
+
+
